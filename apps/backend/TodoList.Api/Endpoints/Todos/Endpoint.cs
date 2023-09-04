@@ -30,8 +30,8 @@ public static class Endpoint
             }
         
             var results = await query
-                .Take(take)
                 .OrderBy(w => w.Id)
+                .Take(take)
                 .AsNoTracking()
                 .ToListAsync(token);
             

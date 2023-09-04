@@ -66,10 +66,10 @@ public class Program
         });
 
         app.UseCors("AllowAllHeaders");
+        app.MapGet("/", () => TypedResults.Ok(new { TodoApi = "Hai" }));
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseTodosEndpoint();
-
         app.Run();
     }
 }
