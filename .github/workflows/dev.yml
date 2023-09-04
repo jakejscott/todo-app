@@ -29,8 +29,6 @@ jobs:
         with:
           node-version: 18
 
-      - run: npm ci
-
       - run: dotnet build ./apps/backend/TodoList.Api
       - run: dotnet test ./apps/backend/TodoList.Api.UnitTests
 
@@ -43,6 +41,7 @@ jobs:
       - name: deploy ecr
         run: |
           cd cdk
+          npm ci
           npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-ecr --require-approval never
 
       - name: login ecr
