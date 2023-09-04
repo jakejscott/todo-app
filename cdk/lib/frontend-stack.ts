@@ -10,6 +10,7 @@ export interface FrontendStackProps extends cdk.StackProps {
   service: string;
   repository: ecr.Repository;
   appVersion: string;
+  backendApi: string;
 }
 
 export class FrontendStack extends cdk.Stack {
@@ -39,6 +40,7 @@ export class FrontendStack extends cdk.Stack {
           port: 3000,
           environmentVariables: {
             NODE_ENV: "production",
+            BACKEND_API: props.backendApi,
           },
         },
         repository: props.repository,

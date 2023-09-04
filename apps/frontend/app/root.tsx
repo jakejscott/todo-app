@@ -9,7 +9,10 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import styles from "./globals.css";
+
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: styles },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
@@ -19,6 +22,7 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         <Meta />
         <Links />
       </head>

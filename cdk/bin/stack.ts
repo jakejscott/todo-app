@@ -29,7 +29,7 @@ const ecrStack = new EcrStack(app, `${SERVICE}-${STAGE}-ecr`, {
   },
 });
 
-new BackendStack(app, `${SERVICE}-${STAGE}-backend`, {
+const backend = new BackendStack(app, `${SERVICE}-${STAGE}-backend`, {
   description: `${SERVICE} ${STAGE} backend`,
   service: SERVICE,
   stage: STAGE,
@@ -41,7 +41,7 @@ new BackendStack(app, `${SERVICE}-${STAGE}-backend`, {
   appVersion: APP_VERSION,
 });
 
-new FrontendStack(app, `${SERVICE}-${STAGE}-frontend`, {
+const frontend = new FrontendStack(app, `${SERVICE}-${STAGE}-frontend`, {
   description: `${SERVICE} ${STAGE} frontend`,
   service: SERVICE,
   stage: STAGE,
@@ -51,4 +51,5 @@ new FrontendStack(app, `${SERVICE}-${STAGE}-frontend`, {
   },
   repository: ecrStack.frontendRepository,
   appVersion: APP_VERSION,
+  backendApi: backend.api,
 });
