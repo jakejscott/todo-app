@@ -63,7 +63,9 @@ jobs:
           docker-compose push
 
       - name: deploy backend
-        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-backend --require-approval never
+        run: |
+          cd cdk
+          npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-backend --require-approval never
 
       # - run: npm run integration
       # - run: npm run e2e
