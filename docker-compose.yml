@@ -1,9 +1,6 @@
 services:
   backend:
     image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE}-${STAGE}-ecr-backend:${APP_VERSION}"
-    container_name: "backend"
-    env_file:
-      - ./.env
     build:
       context: ./
       dockerfile: ./docker/Dockerfile.backend
