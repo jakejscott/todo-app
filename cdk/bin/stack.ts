@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { get } from "env-var";
 import { EcrStack } from "../lib/ecr-stack";
 import { BackendStack } from "../lib/backend-stack";
+import { FrontendStack } from "../lib/frontend-stack";
 
 dotenv.config({
   path: "../.env",
@@ -37,5 +38,17 @@ new BackendStack(app, `${SERVICE}-${STAGE}-backend`, {
     region: AWS_REGION,
   },
   repository: ecrStack.backendRepository,
+  appVersion: APP_VERSION,
+});
+
+new FrontendStack(app, `${SERVICE}-${STAGE}-frontend`, {
+  description: `${SERVICE} ${STAGE} frontend`,
+  service: SERVICE,
+  stage: STAGE,
+  env: {
+    account: AWS_ACCOUNT,
+    region: AWS_REGION,
+  },
+  repository: ecrStack.frontendRepository,
   appVersion: APP_VERSION,
 });
