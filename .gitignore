@@ -1,6 +1,5 @@
-﻿*bin
-*obj
-*.db
+﻿apps/**/bin
+apps/**/obj
 .env
 .idea
 *.user
