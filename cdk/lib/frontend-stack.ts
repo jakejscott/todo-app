@@ -3,18 +3,17 @@ import * as cdk from "aws-cdk-lib";
 import * as apprunner_l1 from "aws-cdk-lib/aws-apprunner";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as iam from "aws-cdk-lib/aws-iam";
-import * as ssm from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
-export interface BackendStackProps extends cdk.StackProps {
+export interface FrontendStackProps extends cdk.StackProps {
   stage: string;
   service: string;
   repository: ecr.Repository;
   appVersion: string;
 }
 
-export class BackendStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: BackendStackProps) {
+export class FrontendStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: FrontendStackProps) {
     super(scope, id, props);
 
     const instanceRole = new iam.Role(this, "InstanceRole", {
@@ -27,14 +26,6 @@ export class BackendStack extends cdk.Stack {
 
     props.repository.grantPull(accessRole);
 
-    const connectionStringParam = ssm.StringParameter.fromSecureStringParameterAttributes(
-      this,
-      "ConnectionStringParameter",
-      {
-        parameterName: `/${this.stackName}/PLANET_SCALE_CONNECTION_STRING`,
-      }
-    );
-
     const service = new apprunner.Service(this, "Service", {
       serviceName: this.stackName,
       cpu: apprunner.Cpu.ONE_VCPU,
@@ -45,12 +36,9 @@ export class BackendStack extends cdk.Stack {
       vpcConnector: undefined,
       source: apprunner.Source.fromEcr({
         imageConfiguration: {
-          port: 80,
-          environmentSecrets: {
-            PLANET_SCALE_CONNECTION_STRING: apprunner.Secret.fromSsmParameter(connectionStringParam),
-          },
+          port: 3000,
           environmentVariables: {
-            ASPNETCORE_ENVIRONMENT: "Production",
+            NODE_ENV: "production",
           },
         },
         repository: props.repository,

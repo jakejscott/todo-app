@@ -1,11 +1,17 @@
 services:
   backend:
-    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE}-${STAGE}-ecr-backend:${VERSION}"
-    container_name: "backend"
-    env_file:
-      - ./.env
+    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE}-${STAGE}-ecr-backend:${APP_VERSION}"
     build:
       context: ./
-      dockerfile: ./docker/Dockerfile.backend
+      dockerfile: Dockerfile.backend
     ports:
       - 5000:80
+    environment:
+      - PLANET_SCALE_CONNECTION_STRING=${PLANET_SCALE_CONNECTION_STRING}
+  frontend:
+    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE}-${STAGE}-ecr-frontend:${APP_VERSION}"
+    build:
+      context: ./
+      dockerfile: Dockerfile.frontend
+    ports:
+      - 3000:3000
