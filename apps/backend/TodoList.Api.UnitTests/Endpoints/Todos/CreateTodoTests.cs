@@ -6,7 +6,7 @@ public class CreateTodoTests
     public async Task ShouldReturnItemIfValid()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var request = new CreateTodoItemRequest
         {
@@ -33,7 +33,7 @@ public class CreateTodoTests
     public async Task ShouldReturnBadRequestIfDescriptionNotValid(string description, string message)
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var request = new CreateTodoItemRequest
         {
@@ -58,7 +58,7 @@ public class CreateTodoTests
     public async Task ShouldReturnBadRequestIfIsCompletedIsNotValid(bool? isCompleted, string message)
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var request = new CreateTodoItemRequest
         {

@@ -10,29 +10,31 @@ using TodoList.Api;
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20230903211607_Init")]
+    [Migration("20230904002842_Init")]
     partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.0-preview.7.23375.4");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("TodoList.Api.TodoItemEntity", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("id");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsCompleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("is_completed");
 
                     b.HasKey("Id");

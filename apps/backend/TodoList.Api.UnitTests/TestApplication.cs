@@ -1,12 +1,16 @@
+using dotenv.net;
+
 namespace TodoList.Api.UnitTests;
 
 public class TestApplication : WebApplicationFactory<Program>
 {
-    private readonly SqliteConnection _sqliteConnection = new("Filename=:memory:");
-
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        _sqliteConnection.Open();
+        // NOTE: Load environment variables from .env file
+        DotEnv.Fluent().WithTrimValues().WithOverwriteExistingVars().WithProbeForEnv(8).Load();
+        
+        var connectionString = Env.GetString("PLANET_SCALE_CONNECTION_STRING");
+        var version = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
         
         builder.ConfigureServices(services =>
         {
@@ -14,24 +18,19 @@ public class TestApplication : WebApplicationFactory<Program>
             services.AddDbContextFactory<TodoContext>();
             
             // We need to replace the configuration for the DbContext to use a different configured database
-            services.AddDbContextOptions<TodoContext>(o => o.UseSqlite(_sqliteConnection));
+            services.AddDbContextOptions<TodoContext>(o => o.UseMySql(connectionString, version));
         });
         
         
         return base.CreateHost(builder);
     }
     
-    public TodoContext CreateTodoContext()
+    public async Task<TodoContext> CreateTodoContext()
     {
-        var db = Services.GetRequiredService<IDbContextFactory<TodoContext>>().CreateDbContext();
-        db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
-        return db;
-    }
+        var db = await Services.GetRequiredService<IDbContextFactory<TodoContext>>().CreateDbContextAsync();
 
-    protected override void Dispose(bool disposing)
-    {
-        _sqliteConnection?.Dispose();
-        base.Dispose(disposing);
+        await db.TodoItems.ExecuteDeleteAsync();
+        
+        return db;
     }
 }

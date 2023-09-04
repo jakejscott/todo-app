@@ -1,3 +1,6 @@
 ﻿*bin
 *obj
 *.db
+.env
+.idea
+*.user

@@ -5,7 +5,6 @@ global using FluentAssertions;
 global using TodoList.Api.Endpoints.Todos;
 global using TodoList.Api.Extensions;
 global using Microsoft.AspNetCore.Mvc.Testing;
-global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;

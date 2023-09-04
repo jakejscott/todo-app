@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Reflection;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using MiniValidation;
 
 namespace TodoList.Api.Extensions;
@@ -52,7 +53,7 @@ public static class ValidationFilterRouteHandlerBuilderExtensions
             }
 
             // We're going to add the filter so add metadata as well
-            builder.Metadata.Add(new ProducesResponseTypeMetadata(statusCode, typeof(HttpValidationProblemDetails),  new []{"application/problem+json"}));
+            builder.Metadata.Add(new ProducesResponseTypeAttribute(typeof(HttpValidationProblemDetails), statusCode, "application/problem+json"));
 
             builder.FilterFactories.Add((EndpointFilterFactoryContext context, EndpointFilterDelegate next) =>
             {

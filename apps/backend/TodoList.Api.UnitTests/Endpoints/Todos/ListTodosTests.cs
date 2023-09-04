@@ -6,7 +6,7 @@ public class ListTodosTests
     public async Task ShouldReturnEmptyItems()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
         
         var client = app.CreateClient();
         var response = await client.GetFromJsonAsync<ListTodoItemsResponse>("/v1/todos");
@@ -18,7 +18,7 @@ public class ListTodosTests
     public async Task ShouldReturnCompletedItems()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
         
         db.TodoItems.Add(new TodoItemEntity
         {
@@ -50,7 +50,7 @@ public class ListTodosTests
     public async Task ShouldReturnNotCompletedItems()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
         
         db.TodoItems.Add(new TodoItemEntity
         {
@@ -82,9 +82,9 @@ public class ListTodosTests
     public async Task ShouldReturnItemsPaginated()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
-        const int total = 100;
+        const int total = 20;
         for (var i = 0; i < total; i++)
         {
             // NOTE: Ulid are not guaranteed to have lexicographic within a ms, so add 1ms delay. 

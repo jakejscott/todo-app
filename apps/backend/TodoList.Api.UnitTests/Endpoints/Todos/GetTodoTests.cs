@@ -6,7 +6,7 @@ public class GetTodoTests
     public async Task ShouldReturnItem()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var id = IdGenerator.NewId();
 
@@ -31,7 +31,7 @@ public class GetTodoTests
     public async Task ShouldReturnNotFound()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var client = app.CreateClient();
         

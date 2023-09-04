@@ -1,4 +1,5 @@
 using System.Reflection;
+using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;
@@ -10,13 +11,22 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        // NOTE: Load environment variables from .env file
+        DotEnv.Fluent()
+            .WithTrimValues()
+            .WithOverwriteExistingVars()
+            .WithProbeForEnv(8)
+            .Load();
+
+        var connectionString = Env.GetString("PLANET_SCALE_CONNECTION_STRING");
+        
         var builder = WebApplication.CreateBuilder(args);
         
-        // NOTE: Setup entity framework with sqlite
-        var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=./todos.db";
         builder.Services.AddDbContext<TodoContext>(options =>
         {
-            options.UseSqlite(connectionString);
+            // NOTE: Setup entity framework with PlanetScale mysql
+            var version = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
+            options.UseMySql(connectionString, version);
             
             // NOTE: Turn off EF warnings that are logged by default, as we are using unique indexes on fields it's expected
             options.ConfigureWarnings(x =>

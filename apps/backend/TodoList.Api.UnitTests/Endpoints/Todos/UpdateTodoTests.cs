@@ -6,7 +6,7 @@ public class UpdateTodoTests
     public async Task ShouldReturnNotFound()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var id = IdGenerator.NewId();
 
@@ -27,7 +27,7 @@ public class UpdateTodoTests
     public async Task ShouldReturnNotContentIfValid()
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
 
         var id = IdGenerator.NewId();
 
@@ -61,7 +61,7 @@ public class UpdateTodoTests
     public async Task ShouldReturnBadRequestIfDescriptionNotValid(string description, string message)
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
         
         var id = IdGenerator.NewId();
 
@@ -98,7 +98,7 @@ public class UpdateTodoTests
     public async Task ShouldReturnBadRequestIfIsCompletedIsNotValid(bool? isCompleted, string message)
     {
         await using var app = new TestApplication();
-        await using var db = app.CreateTodoContext();
+        await using var db = await app.CreateTodoContext();
         
         var id = IdGenerator.NewId();
 
