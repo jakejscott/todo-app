@@ -17,7 +17,7 @@ jobs:
       SERVICE: ${{ vars.SERVICE }}
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCOUNT: ${{ vars.AWS_ACCOUNT }}
-      VERSION: ${{ github.sha }}
+      APP_VERSION: ${{ github.sha }}
       STAGE: dev
     name: build
     steps:
@@ -54,7 +54,7 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.SERVICE }}-${{ env.STAGE }}-ecr-webapp-repository
-          VERSION: ${{ github.sha }}
+          APP_VERSION: ${{ github.sha }}
         run: |
           docker-compose build
           docker-compose push

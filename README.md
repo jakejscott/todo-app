@@ -10,6 +10,7 @@ AWS_REGION=<AWS REGION>
 SERVICE=todo-api
 STAGE=dev
 PLANET_SCALE_CONNECTION_STRING=<PlanetScale connection string>
+APP_VERSION=1.0
 ```
 
 ## Docker

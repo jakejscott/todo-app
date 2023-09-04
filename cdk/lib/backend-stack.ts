@@ -10,7 +10,7 @@ export interface BackendStackProps extends cdk.StackProps {
   stage: string;
   service: string;
   repository: ecr.Repository;
-  version: string;
+  appVersion: string;
 }
 
 export class BackendStack extends cdk.Stack {
@@ -54,7 +54,7 @@ export class BackendStack extends cdk.Stack {
           },
         },
         repository: props.repository,
-        tagOrDigest: props.version,
+        tagOrDigest: props.appVersion,
       }),
     });
 
