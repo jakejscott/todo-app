@@ -30,7 +30,10 @@ jobs:
           node-version: 18
 
       - run: dotnet build ./apps/backend/TodoList.Api
+
       - run: dotnet test ./apps/backend/TodoList.Api.UnitTests
+        env:
+          PLANET_SCALE_CONNECTION_STRING: ${{ secrets.PLANET_SCALE_CONNECTION_STRING }}
 
       - uses: aws-actions/configure-aws-credentials@v2
         with:
