@@ -125,7 +125,7 @@ export default function Index() {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Button asChild variant="link">
+              <Button asChild variant="ghost">
                 <Link to={"/"}>Back</Link>
               </Button>
             </div>
@@ -183,8 +183,11 @@ export default function Index() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={navigation.state != "idle"}>
-                  {navigation.state != "idle" && (
+                <Button
+                  type="submit"
+                  disabled={navigation.state == "submitting"}
+                >
+                  {navigation.state == "submitting" && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Submit

@@ -36,8 +36,21 @@ export type CreateTodoItemResponse = {
 
 const url: string = process.env.BACKEND_API!;
 
-export async function listTodos(): Promise<ListTodoItemsResponse> {
-  const httpResponse = await fetch(`${url}/v1/todos`, { method: "get" });
+export type ListTodosOptions = {
+  pageSize?: number | null;
+  nextPageToken?: string | null;
+};
+
+export async function listTodos(
+  options: ListTodosOptions
+): Promise<ListTodoItemsResponse> {
+  if (!options.pageSize) options.pageSize = 10;
+  let listUrl = `${url}/v1/todos?pageSize=${options.pageSize}`;
+  if (options.nextPageToken) {
+    listUrl += `&nextPageToken=${options.nextPageToken}`;
+  }
+
+  const httpResponse = await fetch(listUrl, { method: "get" });
   if (httpResponse.status == 200) {
     const response = await httpResponse.json();
     return response as ListTodoItemsResponse;
