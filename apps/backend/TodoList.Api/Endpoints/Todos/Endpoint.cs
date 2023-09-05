@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using TodoList.Api.Extensions;
 
 namespace TodoList.Api.Endpoints.Todos;
@@ -81,7 +82,7 @@ public static class Endpoint
                 };
                 return TypedResults.Created(url, response);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex) when(ex.InnerException is MySqlException { ErrorCode: MySqlErrorCode.DuplicateKeyEntry })
             {
                 var errors = new Dictionary<string, string[]> { { "Description", new[] { "The Description field must be unique" } } };
                 return TypedResults.ValidationProblem(errors);
@@ -105,7 +106,7 @@ public static class Endpoint
 
                 return rows == 0 ? TypedResults.NotFound() : TypedResults.NoContent();
             }
-            catch (DbUpdateException)
+            catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
             {
                 var errors = new Dictionary<string, string[]> { { "Description", new[] { "The Description field must be unique" } } };
                 return TypedResults.ValidationProblem(errors);

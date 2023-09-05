@@ -14,6 +14,8 @@ export interface BackendStackProps extends cdk.StackProps {
 }
 
 export class BackendStack extends cdk.Stack {
+  public api: string;
+
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 
@@ -68,6 +70,8 @@ export class BackendStack extends cdk.Stack {
       interval: 5,
       timeout: 2,
     };
+
+    this.api = `https://${service.serviceUrl}`;
 
     new cdk.CfnOutput(this, "ServiceUrl", {
       value: `https://${service.serviceUrl}`,
