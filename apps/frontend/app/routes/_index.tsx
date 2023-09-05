@@ -1,5 +1,6 @@
 import type { V2_MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { Button } from "~/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,7 +11,6 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { listTodos } from "../lib/api.server";
-import { Button } from "~/components/ui/button";
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -33,9 +33,7 @@ export default function Index() {
         <div className="p-10">
           <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
-                Todos App 🪅
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight">Todos 🪅</h2>
               <p className="text-muted-foreground">
                 Here's a list of your tasks for this month!
               </p>
@@ -53,18 +51,20 @@ export default function Index() {
               <TableRow>
                 <TableHead className="w-[100px]">Id</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead className="text-right">Complete</TableHead>
+                <TableHead className="">Completed</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.todos.items.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="font-medium">
-                    <Link to={`/todos/${item.id}/edit`}>{item.id}</Link>
-                  </TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="">{item.id}</TableCell>
+                  <TableCell className="">{item.description}</TableCell>
+                  <TableCell className="">
                     {item.isCompleted ? <span>true</span> : <span>false</span>}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link to={`/todos/${item.id}/edit`}>Edit</Link>
                   </TableCell>
                 </TableRow>
               ))}

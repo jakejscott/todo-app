@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { json, redirect, type ActionArgs } from "@remix-run/node";
+import type { ActionArgs, V2_MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Link,
   useActionData,
@@ -35,6 +36,13 @@ const FormSchema = z.object({
 export type FieldErrors = {
   description?: string[] | undefined;
   isCompleted?: string[] | undefined;
+};
+
+export const meta: V2_MetaFunction = () => {
+  return [
+    { title: "Todo App - New" },
+    { name: "description", content: "Edit todo" },
+  ];
 };
 
 export const action = async ({ request, params }: ActionArgs) => {

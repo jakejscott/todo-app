@@ -1,22 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  json,
-  redirect,
-  type ActionArgs,
-  type LoaderArgs,
-} from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Link,
   useActionData,
+  useFetcher,
   useLoaderData,
   useNavigation,
   useSubmit,
 } from "@remix-run/react";
+
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import * as z from "zod";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
@@ -31,7 +40,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import type { UpdateTodoItemRequest } from "~/lib/api.server";
-import { describeTodo, updateTodo } from "~/lib/api.server";
+import { deleteTodo, describeTodo, updateTodo } from "~/lib/api.server";
 
 const FormSchema = z.object({
   description: z.string().min(2).max(50),
@@ -43,34 +52,47 @@ export type FieldErrors = {
   isCompleted?: string[] | undefined;
 };
 
+export const meta: V2_MetaFunction = () => {
+  return [
+    { title: "Todo App - Edit" },
+    { name: "description", content: "Edit todo" },
+  ];
+};
+
 export const action = async ({ request, params }: ActionArgs) => {
   const id = params["id"];
   invariant(id, "params.id is required");
 
-  const form = await request.formData();
+  const method = request.method.toLowerCase();
 
-  const description = form.get("description") as string;
-  const isCompleted = form.get("isCompleted") == "on" ? true : false;
-  invariant(description, "description is required");
+  if (method == "post") {
+    const form = await request.formData();
 
-  const updateRequest: UpdateTodoItemRequest = {
-    description: description,
-    isCompleted: isCompleted,
-  };
+    const description = form.get("description") as string;
+    const isCompleted = form.get("isCompleted") == "on" ? true : false;
+    invariant(description, "description is required");
 
-  const parsed = FormSchema.safeParse(updateRequest);
-  if (!parsed.success) {
-    const fieldErrors: FieldErrors = parsed.error.formErrors.fieldErrors;
-    return json({ errors: fieldErrors });
-  }
+    const updateRequest: UpdateTodoItemRequest = {
+      description: description,
+      isCompleted: isCompleted,
+    };
 
-  // Handle any server side errors
-  const { problem } = await updateTodo(id, updateRequest);
-  if (problem) {
-    const fieldErrors: FieldErrors = {};
-    fieldErrors.description = problem.errors["Description"];
-    fieldErrors.isCompleted = problem.errors["IsCompleted"];
-    return json({ errors: fieldErrors });
+    const parsed = FormSchema.safeParse(updateRequest);
+    if (!parsed.success) {
+      const fieldErrors: FieldErrors = parsed.error.formErrors.fieldErrors;
+      return json({ errors: fieldErrors });
+    }
+
+    // Handle any server side errors
+    const { problem } = await updateTodo(id, updateRequest);
+    if (problem) {
+      const fieldErrors: FieldErrors = {};
+      fieldErrors.description = problem.errors["Description"];
+      fieldErrors.isCompleted = problem.errors["IsCompleted"];
+      return json({ errors: fieldErrors });
+    }
+  } else if (method == "delete") {
+    await deleteTodo(id);
   }
 
   return redirect("/");
@@ -88,6 +110,7 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
   const navigation = useNavigation();
+  const deleteFetcher = useFetcher();
   const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -114,7 +137,7 @@ export default function Index() {
     }
   }, [actionData?.errors, form]);
 
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
+  async function onSubmit() {
     const formData = new FormData(formRef.current!);
     submit(formData, { action: ".", method: "post", replace: true });
   }
@@ -125,9 +148,7 @@ export default function Index() {
         <div className="p-10">
           <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
-                Todos App 🪅
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight">Todos 🪅</h2>
               <p className="text-muted-foreground">
                 Update your todo by setting the description and completed
                 status.
@@ -145,6 +166,8 @@ export default function Index() {
 
             <Form {...form}>
               <form
+                method="post"
+                name="edit"
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8"
                 ref={formRef}
@@ -200,6 +223,43 @@ export default function Index() {
                 </Button>
               </form>
             </Form>
+
+            <Separator />
+
+            <div>
+              <h3 className="text-xl font-bold tracking-tight">Danger Zone</h3>
+              <p className="text-sm text-muted-foreground">
+                If you want to delete the todo feel free.. yolo.
+              </p>
+            </div>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="submit" variant="destructive">
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your todo and remove your data from our servers.
+                  </AlertDialogDescription>
+                  <deleteFetcher.Form></deleteFetcher.Form>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deleteFetcher.submit({}, { method: "delete" });
+                    }}
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
