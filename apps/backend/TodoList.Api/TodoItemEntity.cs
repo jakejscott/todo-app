@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace TodoList.Api;
 
@@ -9,7 +8,7 @@ namespace TodoList.Api;
 [Index(nameof(Description), IsUnique = true)]
 public class TodoItemEntity
 {
-    [Column("id", TypeName = "    []")]
+    [Column("id")]
     public required string Id { get; set; }
     
     [Column("description")]

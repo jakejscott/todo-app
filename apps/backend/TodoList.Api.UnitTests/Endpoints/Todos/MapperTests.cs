@@ -12,7 +12,7 @@ public class MapperTests
             IsCompleted = true
         };
 
-        DescribeTodoItemResponse response = entity.AsItem();
+        DescribeTodoItemResponse response = entity.ToDescription();
 
         response.Should().BeEquivalentTo(entity);
     }

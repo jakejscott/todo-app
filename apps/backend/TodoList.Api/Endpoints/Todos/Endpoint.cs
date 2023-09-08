@@ -39,7 +39,7 @@ public static class Endpoint
             var response = new ListTodoItemsResponse
             {
                 NextPageToken = results.LastOrDefault()?.Id,
-                Items = results.Select(x => x.AsItem()).ToList()
+                Items = results.Select(x => x.ToDescription()).ToList()
             };
 
             return TypedResults.Ok(response);
@@ -54,7 +54,7 @@ public static class Endpoint
             return entity switch
             {
                 null => TypedResults.NotFound(),
-                _ => TypedResults.Ok(entity.AsItem())
+                _ => TypedResults.Ok(entity.ToDescription())
             };
         })
         .WithName("DescribeTodo")
@@ -78,7 +78,7 @@ public static class Endpoint
                 var url = links.DescribeTodoUrl(entity.Id);
                 var response = new CreateTodoItemResponse
                 {
-                    Item = entity.AsItem()
+                    Item = entity.ToDescription()
                 };
                 return TypedResults.Created(url, response);
             }

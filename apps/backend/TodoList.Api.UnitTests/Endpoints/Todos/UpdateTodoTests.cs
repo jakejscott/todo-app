@@ -54,6 +54,48 @@ public class UpdateTodoTests
         httpResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
     
+    [Fact]
+    public async Task ShouldReturnBadRequestIfDuplicateDescription()
+    {
+        await using var app = new TestApplication();
+        await using var db = await app.CreateTodoContext();
+
+        var entity1 = new TodoItemEntity
+        {
+            Id = IdGenerator.NewId(),
+            Description = "Description 1",
+            IsCompleted = false
+        };
+        
+        var entity2 = new TodoItemEntity
+        {
+            Id = IdGenerator.NewId(),
+            Description = "Description 2",
+            IsCompleted = false
+        };
+
+        db.TodoItems.Add(entity1);
+        db.TodoItems.Add(entity2);
+        await db.SaveChangesAsync();
+
+        var client = app.CreateClient();
+        
+        var request = new UpdateTodoItemRequest
+        {
+            Description = entity1.Description,
+            IsCompleted = true
+        };
+        
+        var httpResponse = await client.PutAsJsonAsync($"/v1/todos/{entity2.Id}", request);
+        httpResponse.Should().NotBeNull();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        
+        var problem = await httpResponse.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        var field = problem!.Errors.Single(x => x.Key == "Description");
+        var error = field.Value.Single();
+        error.Should().Be("The Description field must be unique");
+    }
+    
     [Theory]
     [InlineData(null, "The Description field is required.")]
     [InlineData("", "The Description field is required.")]

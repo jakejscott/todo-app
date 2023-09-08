@@ -2,7 +2,7 @@ namespace TodoList.Api.Endpoints.Todos;
 
 public static class Mapper
 {
-    public static DescribeTodoItemResponse AsItem(this TodoItemEntity entity)
+    public static DescribeTodoItemResponse ToDescription(this TodoItemEntity entity)
     {
         return new()
         {
